@@ -24,6 +24,7 @@
     </style>
 </head>
 <body>
+<script src="lib/dat.gui/dat.gui.min.js"></script>
 <button onclick="addNodes()">Restart Animation</button>
 <script>
     var graph;
@@ -194,11 +195,18 @@
         // Make it all go
         update();
     }
+    
 
     function drawGraph() {
 
         graph = new myGraph("#svgdiv");
 
+        //trying to add a gui controller
+        var gui = new dat.GUI();
+        //gui.add(graph, 'force.linkDistance', -5, 5);
+        
+
+        
 
         graph.addNode('Sophia');
         graph.addNode('Daniel');

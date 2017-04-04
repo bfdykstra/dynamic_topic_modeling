@@ -2,6 +2,19 @@
 // THIS IS THE OBJECT THAT DAT.GUI UPDATES
 // SEE: http://workshop.chromeexperiments.com/examples/gui/
 //****************************************************
+/* takes an array of options such as:
+
+height: window.innerHeight,
+width: window.innerWidth,
+dataset: 'snark40',
+gravity: 0.21,
+charge: -500,
+theta: 0.9,
+friction: 0.9,
+distance: 10,
+strength: 0.9
+*/
+
 var Config = function (options) {
   for (var opt in options) {
     this[opt] = options[opt];
@@ -39,6 +52,7 @@ var Graph = function(data, config) {
   //****************************************************
   // CREATE A RADIAL GRADIENT - USED ON NODES
   //****************************************************
+  
   this.defs = this.svg.append("defs")
 
   this.gradient = this.defs.append("radialGradient")
@@ -53,6 +67,8 @@ var Graph = function(data, config) {
   this.gradient.append("stop")
     .attr("offset", "100%")
     .attr("stop-color", "#0000EE")
+
+  
 
   //****************************************************
   // MAIN GOODIES FOR THE GRAPH OBJECT
@@ -90,6 +106,7 @@ var Graph = function(data, config) {
     this.shake();
   }.bind(this));
 
+  /*
   this.datgui.add(this.config, 'charge', -1000, 1000).onChange(function (d) {
     this.force.charge(d);
     this.force.start()
@@ -109,6 +126,8 @@ var Graph = function(data, config) {
     this.force.friction(d);
     this.force.start()
   }.bind(this));
+
+  */
 
   var link_gui = this.datgui.addFolder('Links');
 
@@ -133,7 +152,10 @@ var Graph = function(data, config) {
 // LOAD A PARTICULAR DATASET FROM THE STORE
 //******************************************
 Graph.prototype.setData = function () {
+
+  //gets the dataset from the config object
   var data = this.store[this.config.dataset];
+  console.log(data);
 
   this.nodes = {};
   this.links = {};
@@ -147,9 +169,8 @@ Graph.prototype.setData = function () {
     }
   }
 
-  console.log(this.nodes)
-  console.log(this.links)
-  
+  console.log(this.nodes);
+  console.log(this.links);
 };
 
 //******************************************
