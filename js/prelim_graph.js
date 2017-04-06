@@ -155,7 +155,6 @@ Graph.prototype.setData = function () {
 
   //gets the dataset from the config object
   var data = this.store[this.config.dataset];
-  console.log(data);
 
   this.nodes = {};
   this.links = {};
@@ -165,7 +164,12 @@ Graph.prototype.setData = function () {
   }
   for (var j = 0; j < data.length; j++) {
     for (var k = 0; k < data[j].length; k++) {
-      this.addLink(j, data[j][k]);
+      if( data[j][k] > data.length){
+        throw " node is out of range";
+      } else{
+        this.addLink(j, data[j][k]);
+      }
+      
     }
   }
 
@@ -229,12 +233,19 @@ Graph.prototype.removeNode = function (nodeID) {
 //******************************************
 Graph.prototype.addLink = function(begID, endID){
   var node1, node2, lid;
-  if (this.nodes[begID] && this.nodes[begID]) {
+  console.log(this.nodes);
+  
+
+  if (this.nodes[begID] && this.nodes[endID]) {
+
+    // condition ? value-if-true : value-if-false
     node1 = this.nodes[begID < endID ? begID: endID];
     node2 = this.nodes[begID < endID ? endID: begID];
     lid = node1.id + '_' + node2.id;
     this.links[lid] = new Link({id: lid, source: node1, target: node2});
   } else {
+    console.log(begID);
+    console.log(endID);
     throw "Both nodes must exist in the graph";
   }
 };
