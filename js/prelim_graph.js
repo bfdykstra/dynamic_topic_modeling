@@ -233,7 +233,7 @@ Graph.prototype.removeNode = function (nodeID) {
 //******************************************
 Graph.prototype.addLink = function(begID, endID){
   var node1, node2, lid;
-  console.log(this.nodes);
+  //console.log(this.nodes);
   
 
   if (this.nodes[begID] && this.nodes[endID]) {
