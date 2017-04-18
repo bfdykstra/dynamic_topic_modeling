@@ -12,6 +12,7 @@ var Config = function (options) {
 // BASIC NODE CLASS - YOU COULD STORE OTHER INFO HERE
 //****************************************************
 var Node = function(obj) {
+  this.label = obj.label;
   this.id = obj.id;
 };
 
@@ -38,21 +39,30 @@ var Graph = function(data, config) {
 
   //****************************************************
   // CREATE A RADIAL GRADIENT - USED ON NODES
+  // THIS IS WHERE YOU CAN MODIFY NODE COLORS
   //****************************************************
   this.defs = this.svg.append("defs")
 
+  
   this.gradient = this.defs.append("radialGradient")
     .attr("id", "nodeGradient")
     .attr({cx: .5, cy: .5, fx: .75, fy: .75, r: .55})
     .attr("spreadMethod", "pad");
 
+  /*
   this.gradient.append("stop")
     .attr("offset", "0%")
     .attr("stop-color", "#E6E6FA")
+  */
+  this.gradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#BF2232")
 
+  
   this.gradient.append("stop")
     .attr("offset", "100%")
     .attr("stop-color", "#0000EE")
+  
 
   //****************************************************
   // MAIN GOODIES FOR THE GRAPH OBJECT
@@ -68,10 +78,10 @@ var Graph = function(data, config) {
   //*********************************************************
   this.force = d3.layout.force()
   this.force
-    // .gravity(config.gravity)
-    // .charge(config.charge)
-    // .theta(config.theta)
-    // .friction(config.friction)
+    .gravity(config.gravity)
+    .charge(config.charge)
+    .theta(config.theta)
+    .friction(config.friction)
     .linkDistance(config.distance)
     .linkStrength(config.strength)
     .size([config.width, config.height]);
@@ -134,7 +144,9 @@ var Graph = function(data, config) {
 // LOAD A PARTICULAR DATASET FROM THE STORE
 //******************************************
 Graph.prototype.setData = function () {
+  //this.config.dataset = 'year'
   var data = this.store[this.config.dataset];
+  console.log(data);
 
   this.nodes = {};
   this.links = {};
@@ -208,6 +220,7 @@ Graph.prototype.addLink = function(begID, endID){
   if (this.nodes[begID] && this.nodes[begID]) {
     node1 = this.nodes[begID < endID ? begID: endID];
     node2 = this.nodes[begID < endID ? endID: begID];
+    console.log(node1);
     lid = node1.id + '_' + node2.id;
     this.links[lid] = new Link({id: lid, source: node1, target: node2});
   } else {
