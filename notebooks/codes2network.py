@@ -10,37 +10,50 @@ def csv2network(infilename):
 
     with open(infilename, 'rU') as infile:
         inreader = csv.reader(infile)
+        cutoff = 5
 
-        attrnames = inreader.next()[1:]  # column headers -> attribute names
+        attrnames = inreader.next()[cutoff:]  # column headers -> attribute names
+
         # make a list of all edges
         # (note: we generate 2 entries for each edge, in either order)
-        edgedict = {edge: 0 for edge in \
+        edgedict = {edge: [0,0] for edge in \
                     itertools.permutations(range(len(attrnames)), 2)}
 
         totalcounts = []
+      
         for counter, obs in enumerate(inreader):
-            if totalcounts == []:
-                totalcounts = [1 if x == '1' else 0 for x in obs[1:]]
-            else:
-                totalcounts = [x + 1 if y == '1' else x for x, y in zip(totalcounts, obs[1:])]
-            # get list of attributes for which this observation has a 1
-            attributelist = [i for i, j in enumerate(obs[1:]) if j == '1']
-            # generate all possible pairs, unordered -> these are edges
-            obs_network = list(itertools.combinations(attributelist, 2))
-            # increment edge counters for these edges
-            for edge in obs_network:
-                edgedict[edge] += 1
+            
+            if len(obs) > 0: 
+                if totalcounts == []:
+                    totalcounts = [1 if x == '1' else 0 for x in obs[cutoff:]]
+                else:
+                    totalcounts = [x + 1 if y == '1' else x for x, y in zip(totalcounts, obs[cutoff:])]
+                
+                # get list of attributes for which this observation has a 1
+                attributelist = [i for i, j in enumerate(obs[cutoff:]) if j == '1']
+                # generate all possible pairs, unordered -> these are edges
+                obs_network = list(itertools.combinations(attributelist, 2))
+                # increment edge counters for these edges
+                for edge in obs_network:
+                    edgedict[edge][1] += 1                
+                    edgedict[edge][0] = obs[5]
+        
+        #print edgedict
         nrobs = counter + 1
         print "Processed %d articles" % nrobs
         nrobs = float(nrobs)
         #print " total counts: ", totalcounts
         attrfractions = [x/nrobs for x in totalcounts]
         # Combine paired edge counters & divide by total, to get percentage
-        edgedict2 = {edge: 100 * (edgedict[edge] + edgedict[(edge[1], edge[0])]) / float(nrobs) \
-                     for edge in itertools.combinations(range(len(attrnames)), 2)}
-        # Remove imaginary edges before returning
+        edgedict2 = {}
+        for edge in itertools.combinations(range(len(attrnames)), 2):
+            edgedict2[edge] = [ edgedict[edge][0], 100 * (edgedict[edge][1] + edgedict[(edge[1], edge[0])][1]) / float(nrobs) ]
+
+        # edgedict2 = {edge: 100 * (edgedict[edge][1] + edgedict[(edge[1], edge[0])]) / float(nrobs) \
+        #              for edge in itertools.combinations(range(len(attrnames)), 2)}
+        # Remove imaginary edges before returning 
         return attrnames, attrfractions, \
-               {edge: val for edge, val in edgedict2.iteritems() if val > 0}
+               {edge: val for edge, val in edgedict2.iteritems() if val[1] > 0}
 
 
 def network2gv(nodenames, nodefractions, edgedict):
